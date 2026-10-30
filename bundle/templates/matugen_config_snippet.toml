@@ -1,0 +1,63 @@
+# =============================================================================
+# Matugen 2.4.0 Configuration Snippet for Dusky Linux Multi-Shell Ecosystem (MERGE SNIPPET)
+# Location: ~/.config/matugen/config.toml
+# =============================================================================
+# CAUTION FOR AI AGENTS & USERS:
+# DO NOT OVERWRITE existing ~/.config/matugen/config.toml! Dusky uses hundreds of lines
+# of templates for Waybar, terminals, Mako, GTK, Rofi, etc.
+# SAFELY MERGE this snippet into config.toml using `safe_config_merger.py --merge`
+# or append only the missing [[templates.*]] blocks at the end of the file.
+# =============================================================================
+
+# Serpantinum Material You Palette Target
+[templates.serpantinum_quickshell]
+input_path  = '~/.config/quickshell/assets/matugen/templates/serpantinum_matugen_colors.json.template'
+output_path = '~/.local/state/serpantinum/qs_matugen_colors.json'
+post_hook   = '''
+  cp -f "$HOME/.local/state/serpantinum/qs_matugen_colors.json" "$HOME/.local/state/serpantinum/qs_colors.json" 2>/dev/null || :
+  if pgrep -f "quickshell" >/dev/null 2>&1; then
+    quickshell -p "$HOME/.config/quickshell/shell.qml" ipc call theme reloadColors 2>/dev/null || :
+  fi
+'''
+
+# Serpantinum & Universal Wallpaper Path Sync Target
+[templates.serpantinum_wallpaper]
+input_path  = '~/.config/matugen/templates/current-wallpaper.txt'
+output_path = '~/.local/state/serpantinum/current_wallpaper'
+post_hook   = '''
+  WALLPAPER="$(cat "$HOME/.local/state/serpantinum/current_wallpaper" 2>/dev/null)"
+  if [[ -n "$WALLPAPER" && -f "$WALLPAPER" ]]; then
+    # Dusky state
+    mkdir -p "$HOME/.config/dusky/settings/dusky_theme"
+    printf '%s\n' "$WALLPAPER" > "$HOME/.config/dusky/settings/dusky_theme/dark_wal"
+    printf '%s %s\n' "$WALLPAPER" "$WALLPAPER" > "$HOME/.config/dusky/settings/dusky_theme/current_image"
+
+    # Serpantinum settings
+    if [[ -f "$HOME/.config/serpantinum/settings.json" ]]; then
+      python3 -c "import json; p='$HOME/.config/serpantinum/settings.json'; f=open(p,'r'); d=json.load(f); f.close(); d['wallpaper']='$WALLPAPER'; f=open(p,'w'); json.dump(d,f,indent=2); f.close()" 2>/dev/null || :
+    fi
+
+    # iNiR config & path
+    mkdir -p "$HOME/.local/state/quickshell/user/generated/wallpaper"
+    printf '%s\n' "$WALLPAPER" > "$HOME/.local/state/quickshell/user/generated/wallpaper/path.txt"
+    if [[ -f "$HOME/.config/inir/config.json" ]]; then
+      python3 -c "import json; p='$HOME/.config/inir/config.json'; f=open(p,'r'); d=json.load(f); f.close(); d.setdefault('background',{})['wallpaperPath']='$WALLPAPER'; f=open(p,'w'); json.dump(d,f,indent=4); f.close()" 2>/dev/null || :
+    fi
+  fi
+'''
+
+# Universal Shell Switcher Dynamic CSS
+[templates.shell_switcher]
+input_path  = '~/.config/matugen/templates/shell-switcher.css'
+output_path = '~/.config/matugen/generated/shell-switcher.css'
+
+# iNiR Quickshell Dynamic Material 3 Palette Target
+[templates.inir_quickshell]
+input_path  = '~/.config/matugen/templates/inir-colors.json'
+output_path = '~/.local/state/quickshell/user/generated/colors.json'
+post_hook   = '''
+  mkdir -p "$HOME/.local/state/quickshell/user/generated"
+  if pgrep -f "quickshell.*inir" >/dev/null 2>&1; then
+    touch "$HOME/.local/state/quickshell/user/generated/colors.json" 2>/dev/null || :
+  fi
+'''
