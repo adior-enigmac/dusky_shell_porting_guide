@@ -21,6 +21,8 @@ This document maintains an active record of all tracked bugs, quirks, and regres
 | **S-04** | Low | `Clipboard.qml` | Escape key ignored when list item is focused | `[FIXED]` | Added window-level `Keys.onEscapePressed` to root `PanelWindow` | [Diagnostic S-04](01_SERPANTINUM_ISSUES_AND_FIXES.md#s-04-clipboard-window-escape-key-handling) |
 | **S-05** | Medium | `Controllers/*.qml` | LayerShell crash when focused screen is null | `[FIXED]` | Added fallback chain to `Quickshell.screens[0]` | [Diagnostic S-05](01_SERPANTINUM_ISSUES_AND_FIXES.md#s-05-null-screen-fallback-in-overlay-controllers) |
 | **S-06** | High | `serpantinumd` | Shell quits on lid close / display sleep | `[FIXED]` | Wrapped Quickshell in supervision loop + `--ensure-running` watchdog | [Diagnostic S-06](01_SERPANTINUM_ISSUES_AND_FIXES.md#s-06-serpantinum-daemon-watchdog--sleep-recovery) |
+| **S-07** | Critical | `Updater.qml` / `AboutTab.qml` | Upstream update notification triggers `install.sh` wipeout | `[FIXED]` | Neutered updater loop, silenced notifications, disabled update button with Dusky badge | [Diagnostic S-07](01_SERPANTINUM_ISSUES_AND_FIXES.md#s-07-upstream-updater-overwrite-trap--permanent-neutralization) |
+| **S-08** | Medium | Upstream 2.3.1 Merge | Qt binding loops, corner overlap & multi-bluetooth shader limits | `[FIXED]` | Cherry-picked GlassFill, BarModule, Floating, and 16-beam shader; bumped version to 2.3.1 | [Diagnostic S-08](01_SERPANTINUM_ISSUES_AND_FIXES.md#s-08-upstream-231-safe-improvements-cherry-pick--synchronization) |
 
 ---
 

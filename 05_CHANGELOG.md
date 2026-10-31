@@ -4,7 +4,39 @@ This document records all modifications made to establish the standalone Dusky L
 
 ---
 
-### [2026-10-30 21:00] Modular Troubleshooting Folders, Defect Trackers & Collaborative Knowledge Base
+### [2026-10-31 10:45] Upstream Serpantinum 2.3.1 Merge & Updater Neutralization (S-07 & S-08)
+- **Target**: Upstream Serpantinum 2.3.1 Synchronization & Accidental Overwrite Defense
+- **Files Modified in Live Shell**:
+  - `~/.config/quickshell/singletons/system/Updater.qml`:
+    - Disarmed the updater: forced `updateAvailable = false`, silenced desktop notifications in `sendNotification()`, and disabled initial/periodic update timers (`startupTimer`, `initialDelayTimer`, `periodicTimer`).
+  - `~/.config/quickshell/scripts/updater.py`:
+    - Neutralized outbound HTTP queries to GitHub; always outputs `{"local": local_ver, "remote": local_ver, "has_update": false, "last_notified": local_ver}`.
+  - `~/.config/quickshell/guide/AboutTab.qml`:
+    - Locked `updateTransitionProgress = 0.0` and hid `updatePanel`.
+    - Replaced the upstream `FillButton` ("Update") that ran destructive `curl ... install.sh | bash` with a disabled badge: `"Managed by Dusky Multi-Shell"`.
+  - `~/.config/quickshell/reusables/display/GlassFill.qml`:
+    - Cherry-picked upstream 2.3.1 `property bool completed: false` to guard `onParentChanged`, completely preventing Qt initialization binding loop warnings.
+  - `~/.config/quickshell/bar/BarModule.qml`:
+    - Deferred `glassBackdropItem` binding evaluation to `Component.onCompleted`, eliminating startup binding evaluation warnings.
+  - `~/.config/quickshell/quickactions/Floating.qml`:
+    - Cherry-picked upstream `handleEdgeHandoff()` and 400ms handoff timer to eliminate edge unmapping jitter.
+  - `~/.config/quickshell/network/NetworkPopup.qml` & `assets/shaders/vfx/node_beams_clipped.frag`:
+    - Raised the Bluetooth lightning beam cap from 8 to 16 (`beam8` through `beam15`). Recompiled binary shader `node_beams_clipped.frag.qsb` via `/usr/lib/qt6/bin/qsb`.
+  - `~/.config/quickshell/popouts/SideMusicPopout.qml`:
+    - Removed 8 overlapping hardcoded corner rectangles and adopted dynamic `GlassFillets` with `flatCorners`.
+  - `~/.local/bin/serpantinumd`:
+    - Fixed bash syntax error (`local daemon_sh` outside function scope) in the supervisor script.
+  - `~/.config/quickshell/version.txt` & `~/.local/state/serpantinum/version`:
+    - Synchronized version to `2.3.1`.
+- **Files Modified in Guide Repo**:
+  - `serpantinum/troubleshooting/00_SERPANTINUM_ISSUE_TRACKER.md`: Added entries for `S-07` and `S-08`.
+  - `serpantinum/troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md`: Detailed diagnostics, root causes, security analysis, and test commands for `S-07` and `S-08`.
+  - `troubleshoot/00_MASTER_ISSUE_TRACKER.md`: Added `S-07` and `S-08` cross-references.
+  - `05_CHANGELOG.md`: Added audit record.
+- **Key Enhancements**:
+  1. **Accidental Patch Destruction Prevented**: Users can no longer accidentally trigger `install.sh` from the UI or get spammed with desktop update notifications.
+  2. **Upstream 2.3.1 Performance & Visual Improvements Incorporated**: Cleaned up Qt binding loops, boosted multi-bluetooth visualization capacity, and eliminated corner rendering overlap without breaking Dusky customizations.
+  3. **No External Dependency Bloat**: Skipped upstream attempt to enforce `ski` file manager; retained Dusky native `xdg-open` handling.
 - **Target**: Troubleshooting Architecture, Shell Folders & Defect Tracking
 - **Files Modified / Created**:
   - `serpantinum/troubleshooting/` (Created):

@@ -31,6 +31,8 @@ Follow these strict rules:
    - Wallpaper Matugen Fix (`S-02`): Ensure `~/.config/serpantinum/settings.json` has `"wallpaper"` as a string path, not an object.
    - Laptop Sleep / Lid Quits Quickshell (`G-01` / `S-06`): Ensure lid-close is decoupled to `loginctl lock-session`, lid-open has `--ensure-running`, and `serpantinumd` has a persistent supervision loop.
    - Missing Matugen Templates (`G-03`): Ensure `current-wallpaper.txt` and `shell-switcher.css` are deployed.
+   - Upstream Updater Neutralization (`S-07`): Ensure `Updater.qml` has `updateAvailable: false`, update timers disabled, `updater.py` network requests neutered, and `AboutTab.qml` update button replaced with `"Managed by Dusky Multi-Shell"` to prevent catastrophic overwrite by `install.sh`.
+   - Upstream 2.3.1 Optimizations (`S-08`): Ensure `completed` guard in `GlassFill.qml`, deferred `glassBackdropItem` binding in `BarModule.qml`, edge handoff timer in `Floating.qml`, dynamic `GlassFillets` in `SideMusicPopout.qml`, and 16-beam Bluetooth shader in `NetworkPopup.qml`.
    - iNiR Silent Launcher Exit (`I-01`): Ensure `apply_niri_app_environment` in `scripts/inir` ends with `return 0`.
    - Material Symbols Fonts (`I-02`): Ensure TTF fonts are in `~/.local/share/fonts/MaterialSymbols/`.
    - iNiR Toplevel Lifecycle Crash (`I-03`): Ensure live-toplevel filter in `CompositorService.qml`.
