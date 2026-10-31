@@ -4,51 +4,97 @@ This document contains copy-pasteable prompts designed for users (both collabora
 
 ---
 
-## 📋 PROMPT 1: For Collaborators / Other Users (e.g., adior on Fresh or Existing Install)
+## 📋 PROMPT 1: Universal All-Rounder Prompt (For Collaborators, New Users & Existing Sync)
 
-Copy and paste the exact block below to your AI assistant:
+> **Instructions for User:** Copy and paste the block below directly into your AI coding assistant (Claude, Gemini, Cursor, ChatGPT, etc.). This single prompt automatically detects whether you need a **brand-new installation** or a **synchronization/update of existing files**, applies all verified bugfixes, neutralizes dangerous updater traps, and verifies the entire system live.
 
 ```markdown
 You are an autonomous AI coding assistant. I have cloned/pulled the Dusky Multi-Shell repository at:
-`/home/ubaid/Public/dusky_shell_porting_guide/` (or your local clone path).
+`<path_to_repo>` (or your local workspace directory).
 
-Your mission is to inspect my current system configuration, compare it against Ubaid's latest multi-shell knowledge base, apply all missing fixes/patches, test every shell, and ensure my system has the exact production-grade setup with ZERO broken features.
+Your mission is to inspect my system, bring my desktop shell setup completely up to date with this knowledge base, fix all known issues, and leave my machine in a 100% stable, production-grade state.
 
-Follow these strict rules:
-1. READ THE GUIDES FIRST:
-   - Primary Playbook: `00_AI_AGENT_AUTONOMOUS_INSTALLER_GUIDE.md`
-   - Master Defect Registry: `troubleshoot/00_MASTER_ISSUE_TRACKER.md`
-   - Global System Issues: `troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md`
-   - Serpantinum Troubleshooting: `serpantinum/troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md`
-   - iNiR Troubleshooting: `inir/troubleshooting/01_INIR_ISSUES_AND_FIXES.md`
+---
 
-2. CARDINAL SAFETY & BACKUP:
-   - Before modifying any user files, run `python3 <guide_path>/bundle/scripts/safe_config_merger.py --backup`.
-   - Never overwrite `~/.config/hypr/` configs or `~/.config/matugen/config.toml`! Safely merge required snippets non-destructively.
+### STEP 1: DETECT ENVIRONMENT (NEW INSTALL VS. EXISTING USER)
+First, determine what state my machine is in:
+- Check if `~/.config/quickshell/` exists and whether `~/user_scripts/hypr/dusky_shell_switch.sh` is present.
+- **IF NEW USER / FRESH DEFAULT DUSKY (Multi-Shell not yet set up):**
+  1. Follow `00_AI_AGENT_AUTONOMOUS_INSTALLER_GUIDE.md` from start to finish.
+  2. Backup user configs with `python3 <repo>/bundle/scripts/safe_config_merger.py --backup`.
+  3. Deploy the bundled scripts to `~/user_scripts/hypr/` and ensure executable permissions (`chmod +x`).
+  4. Deploy `~/.local/bin/inir` and `~/.local/bin/serpantinumd`.
+  5. Deploy required TTF fonts to `~/.local/share/fonts/MaterialSymbols/` and refresh with `fc-cache -f`.
+  6. Deploy Matugen templates (`current-wallpaper.txt`, `shell-switcher.css`) into `~/.config/matugen/templates/`.
+  7. Non-destructively merge Hyprland keybinds, window rules, and Matugen config using `safe_config_merger.py`.
+- **IF EXISTING USER (Updating / Synchronizing after git pull):**
+  1. Backup user configs with `python3 <repo>/bundle/scripts/safe_config_merger.py --backup`.
+  2. Audit all local files against the guides and apply all missing fixes detailed below.
 
-3. INSPECT & APPLY ALL VERIFIED FIXES:
-   - Serpantinum Clipboard (`S-01`): Verify `~/.config/quickshell/clipboard/Clipboard.qml`. Ensure image cards open to full ~250px previews preserving aspect ratio by default, text stays collapsed at 52px, and `onItemExpandedChanged` does NOT hijack `currentIndex` or scroll position.
-   - Wallpaper Matugen Fix (`S-02`): Ensure `~/.config/serpantinum/settings.json` has `"wallpaper"` as a string path, not an object.
-   - Laptop Sleep / Lid Quits Quickshell (`G-01` / `S-06`): Ensure lid-close is decoupled to `loginctl lock-session`, lid-open has `--ensure-running`, and `serpantinumd` has a persistent supervision loop.
-   - Missing Matugen Templates (`G-03`): Ensure `current-wallpaper.txt` and `shell-switcher.css` are deployed.
-   - Upstream Updater Neutralization (`S-07`): Ensure `Updater.qml` has `updateAvailable: false`, update timers disabled, `updater.py` network requests neutered, and `AboutTab.qml` update button replaced with `"Managed by Dusky Multi-Shell"` to prevent catastrophic overwrite by `install.sh`.
-   - Upstream 2.3.1 Optimizations (`S-08`): Ensure `completed` guard in `GlassFill.qml`, deferred `glassBackdropItem` binding in `BarModule.qml`, edge handoff timer in `Floating.qml`, dynamic `GlassFillets` in `SideMusicPopout.qml`, and 16-beam Bluetooth shader in `NetworkPopup.qml`.
-   - iNiR Silent Launcher Exit (`I-01`): Ensure `apply_niri_app_environment` in `scripts/inir` ends with `return 0`.
-   - Material Symbols Fonts (`I-02`): Ensure TTF fonts are in `~/.local/share/fonts/MaterialSymbols/`.
-   - iNiR Toplevel Lifecycle Crash (`I-03`): Ensure live-toplevel filter in `CompositorService.qml`.
+---
 
-4. MANDATORY QUICKSHELL RESTART RULE:
-   - Quickshell caches QML in memory. Any edits made on disk DO NOT live-reload!
-   - You MUST restart the active shell via `~/user_scripts/hypr/dusky_shell_switch.sh <shell>` and verify the new PID with `qs list --all` before verifying any fix!
+### STEP 2: MANDATORY KNOWLEDGE BASE READING
+Before touching any code or configs, you MUST read:
+1. `00_AI_AGENT_AUTONOMOUS_INSTALLER_GUIDE.md` (Master architecture and setup playbook)
+2. `troubleshoot/00_MASTER_ISSUE_TRACKER.md` (Master registry of all tracked defects: G-xx, S-xx, I-xx)
+3. `troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md` (Systemwide issues: sleep crash G-01, keybind collision G-02, templates G-03, wallpaper sync G-04, workspace focus G-06, ghost processes G-07)
+4. `serpantinum/troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md` (Serpantinum issues: clipboard preview S-01, scroll loop S-01, Matugen string S-02, entry casing S-03, Escape dismiss S-04, null screen S-05, sleep watchdog S-06, updater trap S-07, 2.3.1 merge S-08)
+5. `inir/troubleshooting/01_INIR_ISSUES_AND_FIXES.md` (iNiR issues: launcher return code I-01, Material glyphs I-02, toplevel wayland segfault I-03, lock button I-04, theme lockdown I-05)
 
-5. TEST & VERIFY LIVE:
-   - Test switching between: `dusky`, `serpantinum`, `iris`, `material`, `waffle`.
-   - Test all smart dispatchers: launcher (`ALT+SPACE`), control center (`SUPER+SPACE`), clipboard (`SUPER+V`), lock (`SUPER+M`), sidebar (`SUPER+ESC`).
-   - In Serpantinum clipboard: copy a screenshot, verify it opens to full ~250px preview, test Up/Down arrow navigation and mouse wheel scrolling (must not get trapped in an infinite loop).
+---
 
-6. RECIPROCAL DOCUMENTATION:
-   - If you encounter or fix ANY new issue or edge case on my machine, you MUST document its root cause, exact patch, and test commands in that shell's `troubleshooting/` folder, and register it in `troubleshoot/00_MASTER_ISSUE_TRACKER.md` with status `[FIXED]`.
-   - When finished, present a clean report and instruct me to share it with Ubaid!
+### STEP 3: SURGICALLY APPLY ALL VERIFIED FIXES
+Compare my local files against the troubleshooting guides and ensure EVERY fix is present:
+- **Serpantinum Clipboard (`S-01`)**: In `~/.config/quickshell/clipboard/Clipboard.qml`:
+  - Images MUST default to expanded ~250px previews preserving aspect ratio (`model.type === "image"`).
+  - Text items MUST default to collapsed (52px).
+  - `onItemExpandedChanged` must NEVER steal list focus or hijack `clipList.currentIndex` (prevents infinite scroll loop and allows smooth arrow key navigation).
+  - Uninstantiated image height in `getItemBounds(idx)` must be `s(250)`.
+- **Settings & Matugen (`S-02`)**: In `~/.config/serpantinum/settings.json`, `"wallpaper"` must be a string path (not an object), preventing `TypeError: Property 'trim' is not a function`.
+- **Sleep Watchdog (`G-01` / `S-06`)**: Decouple lid-close to `loginctl lock-session`; add `--ensure-running` to lid-open in Hyprland; ensure `serpantinumd` has a persistent supervision loop so the shell never dies on sleep/wake.
+- **Upstream Updater Neutralization (`S-07`)**:
+  - In `~/.config/quickshell/singletons/system/Updater.qml`: set `updateAvailable: false`, neuter update functions, disable periodic timers.
+  - In `~/.config/quickshell/scripts/updater.py`: return `has_update: false` and strip network calls.
+  - In `~/.config/quickshell/guide/AboutTab.qml`: lock `updateTransitionProgress: 0.0`, hide update panel, replace "Update" button with `"Managed by Dusky Multi-Shell"` (prevents catastrophic wipeout by upstream `install.sh`).
+- **Upstream 2.3.1 Performance Fixes (`S-08`)**:
+  - In `GlassFill.qml`: add `completed` guard to prevent Qt binding loop warnings.
+  - In `BarModule.qml`: defer `glassBackdropItem` binding to `Component.onCompleted`.
+  - In `Floating.qml`: add 400ms edge handoff timer to prevent sidebar unmap jitter.
+  - In `NetworkPopup.qml` & `node_beams_clipped.frag`: 16-beam Bluetooth capacity compiled via `qsb`.
+  - In `SideMusicPopout.qml`: clean `GlassFillets` + `flatCorners`.
+- **iNiR Launcher & Fonts (`I-01`, `I-02`, `I-03`)**:
+  - In `scripts/inir`: `apply_niri_app_environment` must end with `return 0`.
+  - In `~/.local/share/fonts/MaterialSymbols/`: TTF fonts must be installed.
+  - In `CompositorService.qml`: filter toplevels against live wayland surfaces to prevent segfault 11.
+
+---
+
+### STEP 4: MANDATORY QUICKSHELL RESTART
+Quickshell compiles and caches QML in memory. File edits on disk DO NOT live-reload!
+Whenever any QML or script is updated, you MUST restart the shell via:
+`~/user_scripts/hypr/dusky_shell_switch.sh <shell_name>`
+and verify exactly ONE process is running using: `qs list --all` and `ps aux | grep quickshell`.
+
+---
+
+### STEP 5: LIVE REGRESSION TESTING
+Verify all components live:
+1. Switch between shells: `dusky`, `serpantinum`, `iris`, `material`, `waffle`.
+2. Test keybindings: App Launcher (`ALT+SPACE`), Control Center (`SUPER+SPACE`), Clipboard (`SUPER+V`), Lock Screen (`SUPER+M`), Sidebar (`SUPER+ESC`).
+3. In Serpantinum Clipboard (`SUPER+V`):
+   - Take a screenshot (`grim /tmp/test.png && wl-copy -t image/png < /tmp/test.png`).
+   - Open clipboard: the screenshot must appear expanded with a large ~250px preview.
+   - Text clips must remain collapsed.
+   - Scroll up/down with mouse wheel and navigate with Up/Down arrow keys; verify smooth scrolling across all items with zero loops.
+4. Open Serpantinum Guide -> About tab: verify version displays `2.3.1`, update badge says `"Managed by Dusky Multi-Shell"`, and no update notifications appear.
+
+---
+
+### STEP 6: RECIPROCAL DOCUMENTATION
+If you discover or fix ANY new bug or edge case on my machine:
+1. Document the root cause, patch, and verification command in that shell's `troubleshooting/` folder (or `troubleshoot/` for global issues).
+2. Register the issue with status `[FIXED]` in that shell's `00_..._ISSUE_TRACKER.md` and in `troubleshoot/00_MASTER_ISSUE_TRACKER.md`.
+3. Give me a clear summary of what was installed, patched, and verified, and tell me to share my findings with Ubaid!
 ```
 
 ---
