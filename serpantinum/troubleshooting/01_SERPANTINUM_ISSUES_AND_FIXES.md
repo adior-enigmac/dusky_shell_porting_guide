@@ -321,6 +321,107 @@ Combined with `dusky_shell_switch.sh --ensure-running` attached to the Hyprland 
 
 ---
 
+## S-07: Upstream Updater Overwrite Trap & Permanent Neutralization
+
+* **Status:** `[FIXED]`
+* **Severity:** Critical (Configuration & Fix Destruction)
+* **Affected Components:** `~/.config/quickshell/singletons/system/Updater.qml`, `~/.config/quickshell/scripts/updater.py`, `~/.config/quickshell/guide/AboutTab.qml`
+* **Symptoms:**
+  - Desktop update notification appears: *"Update available v2.3.1 - Serpantinum update available. Click to open guide."*
+  - Opening the Guide -> About tab shows an enticing green **"Update"** button.
+  - Clicking "Update" executes:
+    ```bash
+    kitty --hold bash -c 'eval "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"'
+    ```
+  - Running upstream `install.sh` overwrites `~/.config/quickshell/` and `~/.local/bin/serpantinumd`, completely obliterating:
+    1. S-01 (Clipboard image preview and scroll navigation fixes)
+    2. S-02 (Matugen string format and theming integration)
+    3. S-06 (Sleep watchdog and supervision loop)
+    4. Hyprland configuration files and custom Dusky keybindings.
+
+### Deep Root Cause Analysis
+Upstream Serpantinum has a background check timer (`periodicTimer` every 60 minutes) that runs `updater.py` to compare local version with GitHub master `version.txt`. If a higher version exists, `Updater.qml` dispatches a desktop notification with `notify-send`. The About tab renders an update panel whose `FillButton` invokes the raw online upstream installer. In a ported multi-shell environment, upstream installers MUST NEVER be run directly because they assume Serpantinum is the sole standalone desktop manager and wipe local customization patches.
+
+### Solution & Patch Implementation
+To permanently safeguard the installation:
+1. **Neutralize Update Loop (`Updater.qml`):**
+   - Force `root.updateAvailable = false`.
+   - Make `reevaluateUpdate()`, `checkUpdate()`, `scheduleInitialCheck()`, and `sendNotification()` immediate no-ops.
+   - Disable `startupTimer`, `initialDelayTimer`, and `periodicTimer` by setting `running: false`.
+2. **Neutralize Python Probe (`updater.py`):**
+   - Strip outbound HTTP requests to GitHub.
+   - Return `{"local": local_ver, "remote": local_ver, "has_update": false, "last_notified": local_ver}`.
+3. **Neutralize UI Trigger (`AboutTab.qml`):**
+   - Force `property real updateTransitionProgress: 0.0`.
+   - Hide `updatePanel` (`visible: false`).
+   - Replace the dangerous `FillButton` with a disabled `ClickButton` badge:
+     ```qml
+     ClickButton {
+         Layout.fillWidth: true
+         Layout.preferredHeight: rootObj.s(38)
+         horizontalPadding: rootObj.s(14)
+         cornerRadius: ThemeBackend.borderRadius
+         buttonText: "Managed by Dusky Multi-Shell"
+         textFontSize: rootObj.s(12)
+         buttonIcon: "󰌚"
+         iconFontSize: rootObj.s(16)
+         accentColor: ThemeBackend.surface0
+         textColor: ThemeBackend.subtext0
+         enabled: false
+     }
+     ```
+4. **Update Version Identifiers:**
+   - Update `version.txt` and `~/.local/state/serpantinum/version` to match current synchronized release (`2.3.1`).
+
+### Testing & Verification
+```bash
+# Verify updater returns no updates available without network calls:
+python3 ~/.config/quickshell/scripts/updater.py
+# Expected output: {"local": "2.3.1", "remote": "2.3.1", "has_update": false, "last_notified": "2.3.1"}
+
+# Verify AboutTab in Guide:
+# Open Guide -> About tab: Update panel is hidden, no update notification sent.
+```
+
+---
+
+## S-08: Upstream 2.3.1 Safe Improvements Cherry-Pick & Synchronization
+
+* **Status:** `[FIXED]`
+* **Severity:** Medium (Visual Polish & Binding Optimization)
+* **Affected Components:** `GlassFill.qml`, `BarModule.qml`, `Floating.qml`, `NetworkPopup.qml`, `node_beams_clipped.frag`, `SideMusicPopout.qml`, `caching.sh`
+* **Symptoms:**
+  - Upstream released Serpantinum 2.3.1 containing bug fixes, visual improvements, and binding loop cleanups.
+  - Naive upgrading would destroy port patches; manual surgical merging is required.
+
+### Upstream Analysis & Cherry-Pick Strategy
+1. **Binding Loop Cleanup (`GlassFill.qml`):**
+   Added `property bool completed: false`. In `onParentChanged`, guarded with `if (completed) resolve();`, setting `completed = true` in `Component.onCompleted`. Eliminates initialization binding loops.
+2. **Deferred Bar Backdrop Binding (`BarModule.qml`):**
+   Converted `glassBackdropItem` from a static property to a deferred `Qt.binding(...)` evaluated in `Component.onCompleted`. Prevents premature evaluation warnings.
+3. **Edge Handoff Timer (`Floating.qml`):**
+   Added `handleEdgeHandoff()` with a 400ms timer to ensure smooth sidebar hide transitions without jitter.
+4. **Multi-Bluetooth Lightning Beams Cap Raised to 16 (`NetworkPopup.qml` & Shader):**
+   Upstream raised beam count from 8 to 16 (`beam8` through `beam15`). Merged QML properties and compiled `assets/shaders/vfx/node_beams_clipped.frag` into `node_beams_clipped.frag.qsb` via `/usr/lib/qt6/bin/qsb`.
+5. **Side Music Popout Corner Radius Cleanliness (`SideMusicPopout.qml`):**
+   Replaced 8 hardcoded `Rectangle` corner overlaps with dynamic `GlassFillets` and directional corner radii (`flatCorners`).
+6. **Installer Dependency Skipped:**
+   Upstream attempted to bundle `ski` file manager into launcher and screenshot scripts. Rejected for Dusky; kept authoritative `xdg-open` and desktop-standard file managers.
+7. **Version Markers:**
+   Synchronized `version.txt` and `~/.local/state/serpantinum/version` to `2.3.1`.
+
+### Testing & Verification
+```bash
+# Verify shader compilation:
+/usr/lib/qt6/bin/qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o /tmp/test.qsb ~/.config/quickshell/assets/shaders/vfx/node_beams_clipped.frag
+# Expected: exit code 0.
+
+# Verify Quickshell running cleanly with single instance:
+qs list --all
+```
+
+---
+
 ## Diagnostic Guide for AI Agents
 
 When working with Serpantinum:

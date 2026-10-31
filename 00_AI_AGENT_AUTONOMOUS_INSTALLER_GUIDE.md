@@ -262,6 +262,18 @@ In `~/.config/quickshell/syspanel/SystemPanelQuickActions.qml`, add the clipboar
     }
     ```
 
+#### Patch 6: Neutralize Upstream Updater Trap in `Updater.qml`, `updater.py` & `AboutTab.qml`
+To prevent accidental destruction of patches by the upstream installer (`install.sh`):
+1. In `~/.config/quickshell/singletons/system/Updater.qml`:
+   - Set `root.updateAvailable = false`.
+   - Make `reevaluateUpdate()`, `checkUpdate()`, `scheduleInitialCheck()`, and `sendNotification()` immediate no-ops (`return;`).
+   - Set `running: false` on `startupTimer`, `initialDelayTimer`, and `periodicTimer`.
+2. In `~/.config/quickshell/scripts/updater.py`:
+   - Replace remote HTTP check to GitHub with `remote_ver = local_ver` and `has_update = False`.
+3. In `~/.config/quickshell/guide/AboutTab.qml`:
+   - Set `updateTransitionProgress = 0.0` and hide `updatePanel` (`visible: false`).
+   - Replace the `FillButton` with a disabled `ClickButton` displaying `"Managed by Dusky Multi-Shell"`.
+
 ---
 
 ## 6. Deploying & Configuring iNiR
