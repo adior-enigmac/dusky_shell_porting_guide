@@ -11,10 +11,15 @@
 >    - **Material ii**: Top M3 bar, app dock, left AI/music sidebar, right quick settings drawer.
 >    - **Waffle**: Windows 11 style bottom taskbar, start menu, action center.
 >
-> ### 🛡️ THE THREE CARDINAL SAFETY RULES
+> ### 🛡️ THE FIVE CARDINAL SAFETY RULES
 > 1. **MANDATORY PRE-FLIGHT BACKUP & SAFE ROLLBACK**: Never modify any user file without first creating a timestamped backup. If any command fails, any syntax error occurs, or Quickshell segfaults, **immediately execute a safe rollback** to restore the user's files and reload the system cleanly!
 > 2. **SMART NON-DESTRUCTIVE MERGING (NEVER OVERWRITE USER CONFIGS)**: The user already has their own custom keybindings, window rules, and dozens of Matugen application templates in `~/.config/hypr/` and `~/.config/matugen/config.toml`. **Never overwrite or replace user config files!** Safely merge the required snippets using `safe_config_merger.py --merge` or append only the missing entries.
 > 3. **IF YOU GET STUCK, CONSULT UBAID'S JOURNEY DOCS**: If you encounter confusing behavior, crashes, or uncooperative widgets, **do not guess!** Go directly into the dedicated subshell documentation folders (`serpantinum/` and `inir/`). Those documents capture Ubaid's entire development journey, root cause discoveries, and battle-tested workarounds.
+> 4. **MANDATORY QUICKSHELL RESTART FOR CHANGES TO TAKE EFFECT**: Quickshell compiles and caches QML documents in memory at launch. Modifying files on disk (`Clipboard.qml`, `Bar.qml`, `settings.json`, controllers) **WILL REMAIN DORMANT AND INACTIVE** until the running Quickshell instance is restarted! Always run `~/user_scripts/hypr/dusky_shell_switch.sh <shell_name>` and verify the new PID via `qs list --all` before testing!
+> 5. **RECIPROCAL KNOWLEDGE BASE LOGGING (GIT SYNC READY)**: This entire repository functions as a shared brain between users and AI agents. Whenever you encounter ANY bug, quirk, or defect during installation:
+>    - Document the root cause, fix, and verification steps in the respected shell's `troubleshooting/` folder (`serpantinum/troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md` or `inir/troubleshooting/01_INIR_ISSUES_AND_FIXES.md`) or global troubleshoot (`troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md`).
+>    - Update the issue tracker table in that shell's `00_..._ISSUE_TRACKER.md` and the master index `troubleshoot/00_MASTER_ISSUE_TRACKER.md` with status `[FIXED]`.
+>    - Clean up temporary files. Ubaid and other users will `git pull` this repository, and their AI agents will read your documented fixes and apply them seamlessly!
 
 ---
 
@@ -503,6 +508,12 @@ sleep 1
 ---
 
 ## 11. Diagnostic Playbook & Troubleshooting Solutions
+
+This multi-shell repository maintains a modular, production-tested troubleshooting knowledge base. Whenever an issue arises or you need specific diagnostics:
+* **Global & Cross-Shell Issues**: See [`troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md`](troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md) (Lid close Quickshell exit `G-01`, keybind collisions `G-02`, Matugen templates `G-03`, wallpaper sync `G-04`, autostart `G-05`, workspace retention `G-06`, ghost shells `G-07`).
+* **Serpantinum Issues**: See [`serpantinum/troubleshooting/README.md`](serpantinum/troubleshooting/README.md) (Diagnostics in [`01_SERPANTINUM_ISSUES_AND_FIXES.md`](serpantinum/troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md) and status in [`00_SERPANTINUM_ISSUE_TRACKER.md`](serpantinum/troubleshooting/00_SERPANTINUM_ISSUE_TRACKER.md)).
+* **iNiR Issues**: See [`inir/troubleshooting/README.md`](inir/troubleshooting/README.md) (Diagnostics in [`01_INIR_ISSUES_AND_FIXES.md`](inir/troubleshooting/01_INIR_ISSUES_AND_FIXES.md) and status in [`00_INIR_ISSUE_TRACKER.md`](inir/troubleshooting/00_INIR_ISSUE_TRACKER.md)).
+* **Overall Defect Inventory**: See [`troubleshoot/00_MASTER_ISSUE_TRACKER.md`](troubleshoot/00_MASTER_ISSUE_TRACKER.md) for a unified status table.
 
 ### 11.1 When to Trigger an Automatic Rollback
 If any of these conditions occur and cannot be solved after 2 attempts:

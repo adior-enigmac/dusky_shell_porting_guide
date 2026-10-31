@@ -150,3 +150,13 @@ hl.layer_rule({
     order = 2,
 })
 ```
+
+---
+
+## 7. Troubleshooting & Defect Tracking
+
+For any runtime issues, silent exits, font glyph rendering, or layer-shell crashes:
+- See [troubleshooting/README.md](troubleshooting/README.md) for the troubleshooting directory overview.
+- See [01_INIR_ISSUES_AND_FIXES.md](troubleshooting/01_INIR_ISSUES_AND_FIXES.md) for detailed diagnostics, root cause analyses, and code patches.
+- See [00_INIR_ISSUE_TRACKER.md](troubleshooting/00_INIR_ISSUE_TRACKER.md) for the active status of all tracked iNiR issues (`I-01` through `I-05`).
+

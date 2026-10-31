@@ -13,3 +13,6 @@ This directory contains the complete technical archive, patch history, and archi
 7. [06_DESKTOP_RIGHT_CLICK_MENU.md](file:///home/ubaid/Public/dusky_shell_porting_guide/serpantinum/06_DESKTOP_RIGHT_CLICK_MENU.md) - Desktop context menu and action triggers.
 8. [07_BLUR_AND_SOLID_MODE.md](file:///home/ubaid/Public/dusky_shell_porting_guide/serpantinum/07_BLUR_AND_SOLID_MODE.md) - Performance toggle, blur opacity, and shadow controls.
 9. [08_TASKS_AND_ARCHITECTURE.md](file:///home/ubaid/Public/dusky_shell_porting_guide/serpantinum/08_TASKS_AND_ARCHITECTURE.md) - Architectural task breakdown and history.
+10. [troubleshooting/](troubleshooting/README.md) - Dedicated troubleshooting folder:
+    - [00_SERPANTINUM_ISSUE_TRACKER.md](troubleshooting/00_SERPANTINUM_ISSUE_TRACKER.md) - Active registry and status tracker for all Serpantinum defects (`S-01` to `S-06`).
+    - [01_SERPANTINUM_ISSUES_AND_FIXES.md](troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md) - Exhaustive root-cause diagnostics, QML patches, and test procedures.

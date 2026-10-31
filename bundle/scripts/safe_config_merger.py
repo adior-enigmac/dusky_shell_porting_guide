@@ -167,6 +167,33 @@ def merge_matugen():
         log(f"Matugen config not found at {MATUGEN_CONFIG}, skipping merge.", "WARN")
         return True
 
+    # 1. Ensure template files are deployed into ~/.config/matugen/templates/
+    user_matugen_templates = os.path.join(HOME, ".config", "matugen", "templates")
+    user_matugen_gen = os.path.join(HOME, ".config", "matugen", "generated")
+    os.makedirs(user_matugen_templates, exist_ok=True)
+    os.makedirs(user_matugen_gen, exist_ok=True)
+
+    template_files = [
+        "inir-colors.json",
+        "serpantinum_matugen_colors.json.template",
+        "current-wallpaper.txt",
+        "shell-switcher.css"
+    ]
+    for tf in template_files:
+        src = os.path.join(TEMPLATES_DIR, tf)
+        dst = os.path.join(user_matugen_templates, tf)
+        if os.path.exists(src):
+            shutil.copy2(src, dst)
+            log(f"Deployed Matugen template: {tf}", "INFO")
+
+    # Also deploy serpantinum_matugen_colors.json.template to quickshell assets
+    qs_matugen_tpl = os.path.join(HOME, ".config", "quickshell", "assets", "matugen", "templates")
+    if os.path.exists(os.path.join(HOME, ".config", "quickshell")):
+        os.makedirs(qs_matugen_tpl, exist_ok=True)
+        src = os.path.join(TEMPLATES_DIR, "serpantinum_matugen_colors.json.template")
+        if os.path.exists(src):
+            shutil.copy2(src, os.path.join(qs_matugen_tpl, "serpantinum_matugen_colors.json.template"))
+
     with open(MATUGEN_CONFIG, "rb") as f:
         try:
             cfg = tomllib.load(f)
