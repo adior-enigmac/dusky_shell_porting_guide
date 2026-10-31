@@ -79,8 +79,8 @@ save_active_shell() {
 }
 
 kill_serpantinum_all() {
-    pkill -9 -f "quickshell.*shell.qml" 2>/dev/null || true
-    pkill -9 -f "qs.*shell.qml" 2>/dev/null || true
+    pkill -9 -f "quickshell.*[sS]hell\.qml" 2>/dev/null || true
+    pkill -9 -f "qs.*[sS]hell\.qml" 2>/dev/null || true
     pkill -9 -f "serpantinumd" 2>/dev/null || true
     pkill -9 -f "focus_daemon.py" 2>/dev/null || true
     pkill -9 -f "cava.*quickshell" 2>/dev/null || true
@@ -151,7 +151,7 @@ apply_serpantinum() {
     if [[ -f "$SERPANTINUM_SETTINGS" ]] && command -v jq &>/dev/null; then
         local tmp
         tmp=$(mktemp)
-        jq '.bar.enabled = true | .dock.enabled = true | .widgets.enabled = true | .notifications.enabled = true | .launcher.enabled = true | .clipboard.enabled = true | .lock.enabled = true | .general.focusDaemonEnabled = true | .wallpaper.enabled = false' \
+        jq '.bar.enabled = true | .dock.enabled = true | .widgets.enabled = true | .notifications.enabled = true | .launcher.enabled = true | .clipboard.enabled = true | .lock.enabled = true | .general.focusDaemonEnabled = true | if (.wallpaper | type) == "object" then .wallpaper = "" else . end' \
            "$SERPANTINUM_SETTINGS" > "$tmp" 2>/dev/null && mv -f "$tmp" "$SERPANTINUM_SETTINGS"
     fi
 
@@ -296,8 +296,40 @@ case "$ACTION" in
             *) apply_dusky ;;
         esac
         ;;
+    --ensure-running|ensure-running)
+        CURRENT=$(get_active_shell)
+        SUBSHELL="$(cat "$SUBSHELL_FILE" 2>/dev/null || echo "$CURRENT")"
+        IS_RUNNING=false
+        case "$CURRENT" in
+            serpantinum)
+                if pgrep -f "[q]uickshell.*[sS]hell\.qml" >/dev/null 2>&1 || pgrep -f "[q]s.*[sS]hell\.qml" >/dev/null 2>&1; then
+                    IS_RUNNING=true
+                fi
+                ;;
+            inir)
+                if pgrep -f "[q]s.*inir" >/dev/null 2>&1 || pgrep -f "[q]uickshell.*inir" >/dev/null 2>&1; then
+                    IS_RUNNING=true
+                fi
+                ;;
+            dusky)
+                if pgrep -x "waybar" >/dev/null 2>&1; then
+                    IS_RUNNING=true
+                fi
+                ;;
+        esac
+        if [[ "$IS_RUNNING" == false ]]; then
+            echo "[dusky_shell_switch] Active shell ($SUBSHELL) is not running. Respawning..."
+            case "$SUBSHELL" in
+                serpantinum) apply_serpantinum ;;
+                inir-ii) apply_inir "ii" ;;
+                inir-waffle) apply_inir "waffle" ;;
+                inir*) apply_inir "iris" ;;
+                *) apply_dusky ;;
+            esac
+        fi
+        ;;
     *)
-        echo "Usage: $(basename "$0") [--dusky|--serpantinum|--inir|--inir-iris|--inir-ii|--inir-waffle|--toggle|--autostart|--status|--menu]"
+        echo "Usage: $(basename "$0") [--dusky|--serpantinum|--inir|--inir-iris|--inir-ii|--inir-waffle|--toggle|--autostart|--ensure-running|--status|--menu]"
         exit 1
         ;;
 esac

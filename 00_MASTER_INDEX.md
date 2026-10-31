@@ -55,6 +55,7 @@ When bootstrapping on a fresh Dusky installation, clone these staging repositori
 ```
 /home/ubaid/Public/dusky_shell_porting_guide/
 ├── 00_AI_AGENT_AUTONOMOUS_INSTALLER_GUIDE.md        # ⭐ ZERO-TO-HERO AI BOOTSTRAP WORKFLOW
+├── PROMPT_FOR_AI_AGENTS.md                         # 📋 COPY-PASTE PROMPTS FOR COLLABORATORS & UBAID
 ├── 00_MASTER_INDEX.md                              # This master database document
 ├── README.md                                       # Overview document
 ├── 01_UNIVERSAL_SWITCHER_ENGINE.md                 # State machine, process isolation, switcher GUI
@@ -105,14 +106,26 @@ When bootstrapping on a fresh Dusky installation, clone these staging repositori
 │   ├── 05_DESKTOP_WIDGETS_AND_REDACTOR.md
 │   ├── 06_DESKTOP_RIGHT_CLICK_MENU.md
 │   ├── 07_BLUR_AND_SOLID_MODE.md
-│   └── 08_TASKS_AND_ARCHITECTURE.md
-└── inir/                                           # iNiR-specific porting suite
-    ├── 00_PREREQUISITES_AND_DEPENDENCIES.md
-    ├── 00_INIR_PORTING_MASTER.md
-    ├── 01_SUBSHELLS_ARCHITECTURE.md
-    ├── 02_IPC_AND_COMMANDS_REFERENCE.md
-    ├── 03_WALLPAPER_AND_THEMING_COORDINATION.md
-    └── 04_HYPRLAND_COMPATIBILITY_ENGINE.md
+│   ├── 08_TASKS_AND_ARCHITECTURE.md
+│   └── troubleshooting/                           # Dedicated Serpantinum Troubleshooting Folder
+│       ├── README.md                              # Troubleshooting guide & overview
+│       ├── 00_SERPANTINUM_ISSUE_TRACKER.md        # Serpantinum defect status table (S-01 to S-06)
+│       └── 01_SERPANTINUM_ISSUES_AND_FIXES.md     # Dedicated diagnostics & QML patches
+├── inir/                                           # iNiR-specific porting suite
+│   ├── 00_PREREQUISITES_AND_DEPENDENCIES.md
+│   ├── 00_INIR_PORTING_MASTER.md
+│   ├── 01_SUBSHELLS_ARCHITECTURE.md
+│   ├── 02_IPC_AND_COMMANDS_REFERENCE.md
+│   ├── 03_WALLPAPER_AND_THEMING_COORDINATION.md
+│   ├── 04_HYPRLAND_COMPATIBILITY_ENGINE.md
+│   └── troubleshooting/                           # Dedicated iNiR Troubleshooting Folder
+│       ├── README.md                              # Troubleshooting guide & overview
+│       ├── 00_INIR_ISSUE_TRACKER.md               # iNiR defect status table (I-01 to I-05)
+│       └── 01_INIR_ISSUES_AND_FIXES.md            # Dedicated diagnostics & CLI patches
+└── troubleshoot/                                  # Global troubleshooting & Master Tracker
+    ├── README.md                                  # Knowledge base protocol & directory overview
+    ├── 00_MASTER_ISSUE_TRACKER.md                 # Unified cross-shell status table (G-xx, S-xx, I-xx)
+    └── 01_GLOBAL_AND_SYSTEM_ISSUES.md             # Systemwide issues (Lid sleep, keybind collisions, etc.)
 ```
 
 ---
@@ -150,3 +163,4 @@ When bootstrapping on a fresh Dusky installation, clone these staging repositori
 8. **Pre-Flight Backup & Safe Rollback**: Always create an archived backup before modifying user files. If any error or crash occurs, execute an immediate rollback (`safe_config_merger.py --rollback`).
 9. **Non-Destructive Merging**: Never replace user config files (`keybinds.lua`, `window_rules.lua`, `matugen/config.toml`). Safely merge snippets without clobbering existing user configurations.
 10. **Consult Ubaid's Journey Docs When Stuck**: If an AI agent encounters unhandled behavior or crashes, it should not guess. It should consult the subshell archives in `serpantinum/` and `inir/`, which document Ubaid's real-world engineering journey, root-cause analyses, and solutions.
+11. **Reciprocal Knowledge Base Logging**: Whenever an engineer or AI agent discovers or fixes any bug, defect, or quirk, they must document it in the respected shell folder (`serpantinum/TROUBLESHOOTING.md` or `inir/TROUBLESHOOTING.md`) or `troubleshoot/01_GLOBAL_AND_SYSTEM_ISSUES.md`, update the corresponding `ISSUE_TRACKER.md` with status `[FIXED]`, and keep the repository synchronized via Git.

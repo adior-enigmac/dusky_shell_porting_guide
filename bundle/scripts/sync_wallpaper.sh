@@ -10,9 +10,26 @@ WP_PATH="${1:-}"
 
 # If no path provided, detect current wallpaper from system state
 if [[ -z "$WP_PATH" ]]; then
-    if [[ -f "$HOME/.config/dusky/settings/dusky_theme/dark_wal" ]]; then
-        WP_PATH="$(head -n 1 "$HOME/.config/dusky/settings/dusky_theme/dark_wal" 2>/dev/null | tr -d '[:space:]')"
+    # 1. Check running skwd-wall-still instance
+    CURRENT_RUNNING="$(ps aux 2>/dev/null | grep "[s]kwd-wall-still" | grep -oP '/home/[^ "]+' | head -n 1 || true)"
+    if [[ -n "$CURRENT_RUNNING" && -f "$CURRENT_RUNNING" ]]; then
+        WP_PATH="$CURRENT_RUNNING"
     fi
+
+    # 2. Check awww query if active
+    if [[ -z "$WP_PATH" && $(command -v awww 2>/dev/null) ]]; then
+        WP_PATH="$(awww query 2>/dev/null | grep -oP 'image: \K.*' | head -n 1 || true)"
+    fi
+
+    # 3. Check current_wallpaper cache
+    if [[ -z "$WP_PATH" || ! -f "$WP_PATH" ]]; then
+        if [[ -f "$HOME/.cache/current_wallpaper" ]]; then
+            CACHED="$(head -n 1 "$HOME/.cache/current_wallpaper" 2>/dev/null | tr -d '[:space:]')"
+            [[ -n "$CACHED" && -f "$CACHED" ]] && WP_PATH="$CACHED"
+        fi
+    fi
+
+    # 4. Check skwd-wall-v2 config lastAppliedKey
     if [[ -z "$WP_PATH" || ! -f "$WP_PATH" ]]; then
         SKWD_KEY="$(python3 -c "import json; print(json.load(open('$HOME/.config/skwd-wall-v2/config.json')).get('components',{}).get('wallpaperSelector',{}).get('lastAppliedKey',''))" 2>/dev/null || true)"
         if [[ "$SKWD_KEY" == static:* ]]; then
@@ -22,6 +39,13 @@ if [[ -z "$WP_PATH" ]]; then
             fi
         fi
     fi
+
+    # 5. Check Dusky dark_wal fallback
+    if [[ -z "$WP_PATH" || ! -f "$WP_PATH" ]]; then
+        if [[ -f "$HOME/.config/dusky/settings/dusky_theme/dark_wal" ]]; then
+            WP_PATH="$(head -n 1 "$HOME/.config/dusky/settings/dusky_theme/dark_wal" 2>/dev/null | tr -d '[:space:]')"
+        fi
+    fi
 fi
 
 if [[ -z "$WP_PATH" || ! -f "$WP_PATH" ]]; then
@@ -29,11 +53,14 @@ if [[ -z "$WP_PATH" || ! -f "$WP_PATH" ]]; then
     exit 1
 fi
 
-# 1. Apply wallpaper via skwd-wall-still if available
+# 1. Apply wallpaper via skwd-wall-still if available (only if not already running with this image)
 if command -v skwd-wall-still >/dev/null 2>&1; then
-    MONITOR="$(hyprctl monitors -j 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null || echo "eDP-1")"
-    [[ -z "$MONITOR" ]] && MONITOR="eDP-1"
-    skwd-wall-still "$MONITOR" "$WP_PATH" --fill-mode fill --persist >/dev/null 2>&1 &
+    ALREADY_DISPLAYING="$(ps aux 2>/dev/null | grep "[s]kwd-wall-still" | grep -F "$WP_PATH" | head -n 1 || true)"
+    if [[ -z "$ALREADY_DISPLAYING" ]]; then
+        MONITOR="$(hyprctl monitors -j 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null || echo "eDP-1")"
+        [[ -z "$MONITOR" ]] && MONITOR="eDP-1"
+        skwd-wall-still "$MONITOR" "$WP_PATH" --fill-mode fill --persist >/dev/null 2>&1 &
+    fi
 fi
 
 # 2. Update skwd-wall-v2 config

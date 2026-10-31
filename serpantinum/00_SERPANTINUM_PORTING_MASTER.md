@@ -150,3 +150,13 @@ hl.layer_rule({
   pkill -9 -f "serpantinumd" 2>/dev/null || true
   pkill -9 -f "focus_daemon.py" 2>/dev/null || true
   ```
+
+---
+
+## 8. Troubleshooting & Defect Tracking
+
+For any runtime issues, QML bugs, sleep wakeups, or clipboard customizations:
+- See [troubleshooting/README.md](troubleshooting/README.md) for the troubleshooting directory overview.
+- See [01_SERPANTINUM_ISSUES_AND_FIXES.md](troubleshooting/01_SERPANTINUM_ISSUES_AND_FIXES.md) for detailed diagnostics, root cause analyses, and code patches.
+- See [00_SERPANTINUM_ISSUE_TRACKER.md](troubleshooting/00_SERPANTINUM_ISSUE_TRACKER.md) for the active status of all tracked Serpantinum issues (`S-01` through `S-06`).
+

@@ -4,6 +4,37 @@ This document records all modifications made to establish the standalone Dusky L
 
 ---
 
+### [2026-10-30 21:00] Modular Troubleshooting Folders, Defect Trackers & Collaborative Knowledge Base
+- **Target**: Troubleshooting Architecture, Shell Folders & Defect Tracking
+- **Files Modified / Created**:
+  - `serpantinum/troubleshooting/` (Created):
+    - `README.md`: Overview of Serpantinum troubleshooting knowledge base.
+    - `00_SERPANTINUM_ISSUE_TRACKER.md`: Active registry and status table for `S-01` through `S-06`.
+    - `01_SERPANTINUM_ISSUES_AND_FIXES.md`: In-depth root cause diagnostics, QML patches, and test commands for clipboard image sizing, scroll loop prevention, keyboard navigation bounds, Matugen wallpaper strings, entrypoint casing, Escape key dismiss, null screen fallback, and lid sleep recovery.
+  - `~/.config/quickshell/clipboard/Clipboard.qml`:
+    - Resolved S-01 clipboard image default expansion: images open to full ~250px previews preserving aspect ratio by default; text items remain collapsed (52px).
+    - Resolved infinite scrolling loop: eliminated `clipList.currentIndex` and `ensureVisible` hijacking in `onItemExpandedChanged` so mouse scrolling and Up/Down arrow navigation move freely across all items.
+    - Added accurate image height (`s(250)`) in `getItemBounds(idx)` for uninstantiated items.
+    - Cleaned up image crossfade opacity in `clipCardCropImg`.
+  - `inir/troubleshooting/` (Created):
+    - `README.md`: Overview of iNiR troubleshooting knowledge base.
+    - `00_INIR_ISSUE_TRACKER.md`: Active registry and status table for `I-01` through `I-05`.
+    - `01_INIR_ISSUES_AND_FIXES.md`: In-depth root cause diagnostics, CLI traps, font glyph deployment, toplevel segfault filters, and GTK theme script lockdown.
+  - `troubleshoot/` (Global Troubleshooting & Master Tracker):
+    - `00_MASTER_ISSUE_TRACKER.md`: High-level master index linking all Global (`G-xx`), Serpantinum (`S-xx`), and iNiR (`I-xx`) issues to their dedicated files.
+    - `01_GLOBAL_AND_SYSTEM_ISSUES.md`: In-depth documentation of all systemwide issues (`G-01` through `G-07`).
+    - `README.md`: Architectural documentation and strict directives for future AI assistants.
+  - `MULTI_SHELL_INSTALLATION_REPORT.md`: Fully incorporated and removed.
+  - `00_AI_AGENT_AUTONOMOUS_INSTALLER_GUIDE.md`:
+    - Added Cardinal Safety Rule 4: Reciprocal Knowledge Base Logging.
+    - Updated Section 11 to link to shell-specific `troubleshooting/` folders.
+  - `README.md` & `00_MASTER_INDEX.md`: Updated directory structures and added Golden Rule 11.
+- **Key Enhancements**:
+  1. **Clean Separation of Concerns**: Global/system-wide issues reside in `troubleshoot/`; shell-specific troubleshooting and issue trackers reside in dedicated `troubleshooting/` folders inside `serpantinum/` and `inir/`.
+  2. **Bi-Directional AI Collaboration**: Any future AI assistant that fixes an issue must log it in the appropriate folder and tracker, allowing team synchronization via standard `git pull`.
+
+---
+
 ### [2026-10-29 23:55] Safe Config Merger, Automatic Rollback Engine & Deep Journey Knowledge Base
 - **Target**: Universal Porting Guide Knowledge Base, Core Script Bundle & Installer Playbook
 - **Files Modified / Created**:
